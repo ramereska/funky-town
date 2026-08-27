@@ -46,11 +46,12 @@ def transform_weather(raw_weather):
     }
 
 
-raw_weather = get_current_weather(
-    latitude=48.1486,
-    longitude=17.1077,
-)
+if __name__ == "__main__":
+    raw_weather = get_current_weather(
+        latitude=48.1486,
+        longitude=17.1077,
+    )
 
-weather = transform_weather(raw_weather)
+    weather = transform_weather(raw_weather)
 
-print(weather)
+    print(weather)
