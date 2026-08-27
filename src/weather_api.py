@@ -2,11 +2,11 @@ from datetime import datetime, timezone
 import os
 import requests
 
-def get_current_weather(latitude, longitude):
-    api_key = os.getenv("OPENWEATHER_API_KEY")
+def get_current_weather(latitude, longitude, api_key=None):
+    api_key = api_key or os.getenv("OPENWEATHER_API_KEY")
 
     if not api_key:
-        raise ValueError("OPENWEATHER_API_KEY environment variable is not set")
+        raise ValueError("OPENWEATHER_API_KEY is not set")
 
     url = "https://api.openweathermap.org/data/2.5/weather"
 
