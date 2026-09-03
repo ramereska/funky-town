@@ -1,6 +1,43 @@
 from datetime import datetime, timezone
 import os
+
 import requests
+
+
+def get_coordinates(city, api_key, country_code=None):
+    url = "https://api.openweathermap.org/geo/1.0/direct"
+
+    query = city
+
+    if country_code:
+        query = f"{city},{country_code}"
+
+    params = {
+        "q": query,
+        "limit": 1,
+        "appid": api_key,
+    }
+
+    response = requests.get(
+        url,
+        params=params,
+        timeout=10,
+    )
+
+    response.raise_for_status()
+
+    locations = response.json()
+
+    if not locations:
+        raise ValueError(f"City not found: {city}")
+
+    return {
+        "city": locations[0]["name"],
+        "latitude": locations[0]["lat"],
+        "longitude": locations[0]["lon"],
+        "country": locations[0]["country"],
+    }
+
 
 def get_current_weather(latitude, longitude, api_key=None):
     api_key = api_key or os.getenv("OPENWEATHER_API_KEY")
@@ -40,18 +77,7 @@ def transform_weather(raw_weather):
         "weather_condition": raw_weather["weather"][0]["main"],
         "observation_timestamp": datetime.fromtimestamp(
             raw_weather["dt"],
-            tz=timezone.utc
+            tz=timezone.utc,
         ).isoformat(),
         "ingestion_timestamp": datetime.now(timezone.utc).isoformat(),
     }
-
-
-if __name__ == "__main__":
-    raw_weather = get_current_weather(
-        latitude=48.1486,
-        longitude=17.1077,
-    )
-
-    weather = transform_weather(raw_weather)
-
-    print(weather)
